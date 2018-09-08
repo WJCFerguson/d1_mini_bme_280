@@ -4,3 +4,12 @@
 [submodule "makeEspArduino"]
 	path = makeEspArduino
 	url = https://github.com/plerup/makeEspArduino.git
+[submodule "libraries/Adafruit_BME280_Library"]
+	path = libraries/Adafruit_BME280_Library
+	url = https://github.com/adafruit/Adafruit_BME280_Library.git
+[submodule "libraries/Adafruit_Sensor"]
+	path = libraries/Adafruit_Sensor
+	url = https://github.com/adafruit/Adafruit_Sensor.git
+[submodule "libraries/thingspeak-arduino"]
+	path = libraries/thingspeak-arduino
+	url = https://github.com/mathworks/thingspeak-arduino.git

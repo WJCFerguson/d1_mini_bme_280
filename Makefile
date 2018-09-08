@@ -2,7 +2,7 @@ ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 ESP_ROOT = $(ROOT_DIR)/esp8266
 
 BOARD ?= d1_mini
-SKETCH ?= esp8266/libraries/esp8266/examples/Blink/Blink.ino
+SKETCH ?= src/thingspeak_bme280.ino
 CUSTOM_LIBS ?= ./libraries
 
 # sentinels for rebuilding submodules and fetching tools
