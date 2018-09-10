@@ -34,8 +34,7 @@ class BME280Handler : public Adafruit_BME280
 
     void take_measurement()
     {
-        static const float F_MULT = 9.0 / 5.0;
-        temperature = 32 + TEMPERATURE_OFFSET + readTemperature() * F_MULT;
+        temperature = TEMP_CONV(readTemperature()) + TEMPERATURE_OFFSET;
         pressure = readPressure() / 100.0 + PRESSURE_OFFSET;
         humidity = readHumidity() + HUMIDITY_OFFSET;
     }
