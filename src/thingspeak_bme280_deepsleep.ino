@@ -91,13 +91,18 @@ void setup() {
     if (RSSI_FIELD)
         ThingSpeak.setField(RSSI_FIELD, WiFi.RSSI());
 
-    ts(); Serial.print("Writing to ThingSpeak... ");
-    int result = ThingSpeak.writeFields(CHANNEL_ID, WRITE_API_KEY);
-    if (result != HTTP_CODE_OK) {
-        Serial.printf("FAILED (%d)\r\n", result);
-        sleep_after(upload_period_us / 10); // retry in 1/10 period
+    if (WRITE_API_KEY)
+    {
+        ts(); Serial.print("Writing to ThingSpeak... ");
+        int result = ThingSpeak.writeFields(CHANNEL_ID, WRITE_API_KEY);
+        if (result != HTTP_CODE_OK) {
+            Serial.printf("FAILED (%d)\r\n", result);
+            sleep_after(upload_period_us / 10); // retry in 1/10 period
+        }
+        Serial.println("OK!");
     }
-    Serial.println("OK!");
+    else
+        delay(10000);
     sleep_after(upload_period_us);
 }
 

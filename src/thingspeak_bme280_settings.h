@@ -15,15 +15,15 @@ const char* wifi_psk  = "yyyyyyyy";
 #include "wifi_credentials.h"
 
 // set to a string if you want a device hostname:
-const char* wifi_hostname = 0;
+const char* wifi_hostname = "thing4";
 
 // =================================== BME280 ==================================
 static const uint8_t BME_I2C_ADDR = 0x76; // may be 0x77
 
 
 // ================================= ThingSpeak ================================
-const int CHANNEL_ID = xxxxx;
-const char* WRITE_API_KEY = "xxxxx";
+const int CHANNEL_ID = 599591;
+const char* WRITE_API_KEY = "R725FGXF5Y51ASPE";
 
 // set any field to zero to inhibit sending
 const unsigned int TEMPERATURE_FIELD = 1;
