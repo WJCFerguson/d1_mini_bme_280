@@ -24,8 +24,9 @@ This was created using a D1 Mini clone and typical 4-pin I2C BME280 package.  Pi
 
 ### Firmware
 
-* Edit the settings at the top of `src/thingspeak_bme280.ino` to set your WiFi and ThingSpeak details.
-* If you don't have a D1 Mini, edit the `BOARD` type in `Makefile`
+* Edit the settings in `src/thingspeak_bme280_settings.h`.
+* make `src/wifi_credentials.h` as outlined in `src/thingspeak_bme280_settings.h`
+* If you aren't using a D1 Mini, edit the `BOARD` type in `Makefile`
 * Plug it in and `make flash`
 
 See below for verification & troubleshooting

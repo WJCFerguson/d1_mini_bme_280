@@ -10,32 +10,7 @@
 #include <ESP8266WebServer.h>
 #include <ThingSpeak.h>
 
-// ================================== Settings =================================
-// BME280
-static const uint8_t BME_I2C_ADDR = 0x76; // may be 0x77
-
-// Wi-Fi
-const char* ssid = 'xxxxx';
-const char* password = 'xxxxxxxx';
-
-// ThingSpeak Settings
-const int CHANNEL_ID = xxxxx;
-const char* WRITE_API_KEY = "xxxxx";
-
-// set any field to zero to not send
-const unsigned int TEMPERATURE_FIELD = 1;
-const unsigned int HUMIDITY_FIELD = 2;
-const unsigned int PRESSURE_FIELD = 3;
-
-// crude calibration of measurements via offsets:
-const float TEMPERATURE_OFFSET = 0.0;
-const float HUMIDITY_OFFSET = 0.0;
-const float PRESSURE_OFFSET = 0.0;
-
-// Behavior
-static const unsigned long upload_period_s = 60;
-
-// ================================ End Settings ===============================
+#include "thingspeak_bme280_settings.h"
 
 // =============================================================================
 /// Tailored version of the Adafruit_BME280 class to our specific needs
@@ -113,8 +88,10 @@ void setup() {
     Serial.println("Sensor found");
 
     // Wifi
-    Serial.print("Wifi connecting");
-    WiFi.begin(ssid, password);
+    Serial.print(String("Wifi connecting to ") + wifi_ssid);
+    if (wifi_hostname)
+        WiFi.hostname(wifi_hostname);
+    WiFi.begin(wifi_ssid, wifi_psk);
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
@@ -122,7 +99,8 @@ void setup() {
     }
     Serial.println();
     Serial.print("Connected as ");
-    Serial.println(WiFi.localIP());
+    Serial.print(WiFi.localIP());
+    Serial.println(String("; RSSI: ") + String(WiFi.RSSI()) + " dBm");
 
     // ThingSpeak
     ThingSpeak.begin(wifi_client);
