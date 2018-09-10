@@ -61,7 +61,7 @@ void handleRoot() {
     web_server.send(
         200,
         "text/plain",
-        String("Measurements\n") +
+        String(wifi_hostname) + " measurements\n\n" +
         "  Temperature: " + String(bme.temperature, 1) + " F\n" +
         "  Humidity   : " + String(bme.humidity, 1) + " %\n" +
         "  Pressure   : " + String(bme.pressure, 1) + " hPa\n\n" +
