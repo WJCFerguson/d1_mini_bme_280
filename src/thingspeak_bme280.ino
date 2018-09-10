@@ -21,19 +21,20 @@ class BME280Handler : public Adafruit_BME280
     bool begin(uint8_t addr)
     {
         bool result = Adafruit_BME280::begin(addr);
-        // recommended settings for weather/climate monitoring
-        setSampling(Adafruit_BME280::MODE_FORCED,
-                    Adafruit_BME280::SAMPLING_X1, // temperature
-                    Adafruit_BME280::SAMPLING_X1, // pressure
-                    Adafruit_BME280::SAMPLING_X1, // humidity
-                    Adafruit_BME280::FILTER_OFF);
+        // slow / conservative oversampling and filtering.
+        setSampling(
+            MODE_NORMAL,
+            TEMPERATURE_FIELD ? SAMPLING_X16 : SAMPLING_NONE,
+            PRESSURE_FIELD    ? SAMPLING_X16 : SAMPLING_NONE,
+            HUMIDITY_FIELD    ? SAMPLING_X16 : SAMPLING_NONE,
+            FILTER_X4,
+            STANDBY_MS_1000);
         return result;
     }
 
     void take_measurement()
     {
         static const float F_MULT = 9.0 / 5.0;
-        takeForcedMeasurement(); // in forced mode, so must do this first
         temperature = 32 + TEMPERATURE_OFFSET + readTemperature() * F_MULT;
         pressure = readPressure() / 100.0 + PRESSURE_OFFSET;
         humidity = readHumidity() + HUMIDITY_OFFSET;
