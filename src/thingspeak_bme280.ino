@@ -6,6 +6,7 @@
 #include <SPI.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
+#include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ThingSpeak.h>
@@ -117,19 +118,33 @@ void setup() {
 // =============================================================================
 void send_values()
 {
+    static const int RETRIES = 5;
+
     bme.take_measurement();
-    Serial.println(String(millis() / 1000.0, 2) + "s >>> " +
-                   "Temp: " + String(bme.temperature, 1) + " F" +
-                   "; Pressure: " + String(bme.pressure, 1) + " hPa" +
-                   "; Humidity: " + String(bme.humidity, 1) + " %");
-    if (TEMPERATURE_FIELD)
-        ThingSpeak.setField(TEMPERATURE_FIELD, bme.temperature);
-    if (PRESSURE_FIELD)
-        ThingSpeak.setField(PRESSURE_FIELD, bme.pressure);
-    if (HUMIDITY_FIELD)
-        ThingSpeak.setField(HUMIDITY_FIELD, bme.humidity);
-    ThingSpeak.writeFields(CHANNEL_ID, WRITE_API_KEY);
-    Serial.println("Wrote to ThingSpeak");
+
+    for (int i = 1; i <= RETRIES; ++i)
+    {
+        if (TEMPERATURE_FIELD)
+            ThingSpeak.setField(TEMPERATURE_FIELD, bme.temperature);
+        if (PRESSURE_FIELD)
+            ThingSpeak.setField(PRESSURE_FIELD, bme.pressure);
+        if (HUMIDITY_FIELD)
+            ThingSpeak.setField(HUMIDITY_FIELD, bme.humidity);
+
+        Serial.print(String(millis() / 1000.0, 2) + "s: " +
+                     String(bme.temperature, 1) + "F; " +
+                     String(bme.pressure, 1) + "hPa; " +
+                     String(bme.humidity, 1) + "%; " +
+                     "Writing to ThingSpeak attempt " + i + "... ");
+        int result = ThingSpeak.writeFields(CHANNEL_ID, WRITE_API_KEY);
+        if (result == HTTP_CODE_OK)
+        {
+            Serial.println("OK!");
+            break;
+        }
+        Serial.println(String("FAILED (") + result + ")");
+        delay(15 * 1000);       // ThingSpeak rate-limits to one every 15s
+    }
 }
 
 
