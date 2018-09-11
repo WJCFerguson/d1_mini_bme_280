@@ -78,7 +78,7 @@ void handleRoot() {
 
 // =============================================================================
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(9600);
 
     // Sensor
     if (!bme.begin(BME_I2C_ADDR))

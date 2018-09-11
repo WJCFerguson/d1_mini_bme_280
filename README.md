@@ -41,6 +41,6 @@ This repo adds a very little more infrastructure that allows you to clone this r
 
 To validate you can build to the device `make blink`, should make and flash an LED blink demo.
 
-To check which I2C Address your BME280 uses, `make enumerate` will make and flash a sketch that enumerates I2C addresses over Serial. Connect e.g. `picocom -b 115200 /dev/ttyUSB1`.
+To check which I2C Address your BME280 uses, `make enumerate` will make and flash a sketch that enumerates I2C addresses over Serial. Connect e.g. `picocom /dev/ttyUSB1` (exit `picocom` with `ctrl-a ctrl-c`).
 
 After building the main program with `make flash`, connect with serial and hit reset to start from the beginning, and watch to see that it connects to wifi, finds the sensor, connects to ThingSpeak etc..  You can also connect a browser to the IP address to get fresh readings and confirm some settings.
