@@ -1,28 +1,39 @@
-# Weather reporting to ThingSpeak from an ESP8266 with an BME280
+# Temperature, Humidity and Atmospheric Pressure from an ESP8266 with an BME280
 
-This is some simple Arduino/ESP8266 `.ino` sketch code to pull together the pieces from other people's hard work.
+This is some simple Arduino/ESP8266 `.ino` sketch code to pull libraries from other people's hard work.
 
 * Connects to Wifi
-* Collects data on a cadence from the ESP8266
-* Sends data to ThingSpeak
-* Reports progress on Serial
+* monitors temperature, humidity and atmospheric pressure
+* Serves up a simple web page with the data
+* Periodically sends data to ThingSpeak
+* Reports and logs over Serial
 
-### Prerequsites
+## Prerequsites
 
-Just `make` and `git`, plus either the arduino package or another package that provides `esptool` 
+* `make`
+* `git`
+* either the `arduino-mk` package or another package that provides `esptool`.
+
+Also, A dumb terminal emulator like `picocom` is very useful, if only to find out the assigned IP addr.
+
+On Ubuntu/Debian: `sudo apt install make git arduino-mk picocom`.
 
 ## Building
 
-This was created using a D1 Mini clone and typical 4-pin I2C BME280 package.  Pins:
+#### Hardware
 
-### Hardware
+Just takes a little soldering.  Any ESP8266 with I2C pins should work.  This was created using a D1 Mini clone and typical 4-pin I2C BME280 package (total < US$6), connecting pins:
 
-* 3.3V->VIN
-* G->GND
-* D1->SCL
-* D2->SCA
+```
+| 3.3V | VIN |
+| G    | GND |
+| D1   | SCL |
+| D2   | SCA |
+```
 
-### Firmware
+#### Firmware
+
+Building and flashing should be trivial.  You'll need to make a ThingSpeak account and channel (free of charge).
 
 * Edit the settings in `src/thingspeak_bme280_settings.h`.
 * make `src/wifi_credentials.h` as outlined in `src/thingspeak_bme280_settings.h`
@@ -31,15 +42,21 @@ This was created using a D1 Mini clone and typical 4-pin I2C BME280 package.  Pi
 
 See below for verification & troubleshooting
 
-## Project Repo using makeEspArduino.mk
+## Repo structure
 
-The automagic ESP8266 Makefile project [makeEspArduino](https://github.com/plerup/makeEspArduino) does an amazing job of allowing you to do little more than just write your `.ino` code.  
+This repo provides a little infrastructure such that on first `make` it will fetch and initialize the required repositories as git submodules:
 
-This repo adds a very little more infrastructure that allows you to clone this repo, and on first `make` it will fetch and initialize the required repositories, as git submodules.
+* The automagic ESP8266 Makefile project [plerup/makeEspArduino](https://github.com/plerup/makeEspArduino) does an amazing job, leaving you do to little more than write your `.ino` code.
+* The [esp8266/Arduino](https://github.com/esp8266/Arduino.git) project provides the support that allows Arduino-style sketches on esp8266.
+* [adafruit/Adafruit_BME280_Library](https://github.com/adafruit/Adafruit_BME280_Library.git) provides support for the BME280
+* [adafruit/Adafruit_Sensor](https://github.com/adafruit/Adafruit_Sensor.git) is needed by `adafruit/Adafruit_BME280_Library`.
+* [mathworks/thingspeak-arduino](https://github.com/mathworks/thingspeak-arduino.git) helps upload data to ThingSpeak, but frankly raw HTTP Posts might be almost as easy.
+
+If you extend it and need other libraries, simply cloning them into `./libraries` should be all you need to do.  `makeEspArduino` will automatically find them.
 
 # Verification and Troubleshooting
 
-To validate you can build to the device `make blink`, should make and flash an LED blink demo.
+To validate you can build to the device, plug it in and `make blink`, should make and flash an LED blink demo.
 
 To check which I2C Address your BME280 uses, `make enumerate` will make and flash a sketch that enumerates I2C addresses over Serial. Connect e.g. `picocom /dev/ttyUSB1` (exit `picocom` with `ctrl-a ctrl-c`).
 

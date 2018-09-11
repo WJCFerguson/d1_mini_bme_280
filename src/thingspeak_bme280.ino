@@ -14,14 +14,14 @@
 #include "thingspeak_bme280_settings.h"
 
 // =============================================================================
-/// Tailored version of the Adafruit_BME280 class to our specific needs
+/// Adafruit_BME280 class tailored to the specific needs
 class BME280Handler : public Adafruit_BME280
 {
   public:
     bool begin(uint8_t addr)
     {
         bool result = Adafruit_BME280::begin(addr);
-        // slow / conservative oversampling and filtering.
+        // slow & conservative 1Hz/16x oversampling and significant filtering.
         setSampling(
             MODE_NORMAL,
             TEMPERATURE_FIELD ? SAMPLING_X16 : SAMPLING_NONE,
@@ -61,15 +61,16 @@ void handleRoot() {
     web_server.send(
         200,
         "text/plain",
-        String(wifi_hostname) + " measurements\n\n" +
+        String(wifi_hostname) +
+        "(RSSI: " + String(WiFi.RSSI()) + " dBm).\n\nMeasurements:\n" +
         "  Temperature: " + String(bme.temperature, 1) + " F\n" +
         "  Humidity   : " + String(bme.humidity, 1) + " %\n" +
         "  Pressure   : " + String(bme.pressure, 1) + " hPa\n\n" +
-        String("Offsets:\n") +
+        String("Calibration Offsets:\n") +
         "  Temperature: " + String(TEMPERATURE_OFFSET, 1) + " F\n" +
         "  Humidity   : " + String(HUMIDITY_OFFSET, 1) + " %\n" +
         "  Pressure   : " + String(PRESSURE_OFFSET, 1) + " hPa\n\n" +
-        String("Fields:\n") +
+        String("ThingSpeak Fields:\n") +
         "  Temperature: " + String(TEMPERATURE_FIELD) + "\n" +
         "  Humidity   : " + String(HUMIDITY_FIELD) + "\n" +
         "  Pressure   : " + String(PRESSURE_FIELD) + "\n");
@@ -109,7 +110,8 @@ void setup() {
     // Web web_server
     web_server.on("/", handleRoot);
     web_server.begin();
-    Serial.println("Web serving");
+    Serial.print("Web serving on http://");
+    Serial.println(WiFi.localIP());
 
     // Set up next sample time.
     next_upload_millis = millis();
@@ -135,7 +137,7 @@ void send_values()
                      String(bme.temperature, 1) + "F; " +
                      String(bme.pressure, 1) + "hPa; " +
                      String(bme.humidity, 1) + "%; " +
-                     "Writing to ThingSpeak attempt " + i + "... ");
+                     "Writing to ThingSpeak (attempt " + i + ")... ");
         int result = ThingSpeak.writeFields(CHANNEL_ID, WRITE_API_KEY);
         if (result == HTTP_CODE_OK)
         {
