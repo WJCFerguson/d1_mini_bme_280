@@ -2,11 +2,19 @@
 
 This is some simple Arduino/ESP8266 `.ino` sketch code to pull libraries from other people's hard work.
 
-* Connects to Wifi
-* monitors temperature, humidity and atmospheric pressure
-* Serves up a simple web page with the data
-* Periodically sends data to ThingSpeak
-* Reports and logs over Serial
+There are two versions.  One uses deep sleep between measurements to
+save power, the other is always on and offers a simple web page with
+settings.
+
+They both:
+
+* Connect to Wifi
+* monitor temperature, humidity and atmospheric pressure
+* Periodically send data to ThingSpeak
+* Report and log over Serial
+
+The deep sleep sketch is the default (`make flash`), and the web
+sketch can be made with `make SKETCH=src/thingspeak_bme280.ino flash`.
 
 ## Prerequsites
 
