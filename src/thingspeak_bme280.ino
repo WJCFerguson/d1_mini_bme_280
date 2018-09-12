@@ -48,7 +48,7 @@ class BME280Handler : public Adafruit_BME280
 
 // =============================== Static objects ==============================
 BME280Handler bme;
-static unsigned long next_upload_millis = 0;
+static unsigned long next_upload_micros = 0;
 WiFiClient wifi_client;
 ESP8266WebServer web_server(80);
 
@@ -114,7 +114,7 @@ void setup() {
     Serial.println(WiFi.localIP());
 
     // Set up next sample time.
-    next_upload_millis = millis();
+    next_upload_micros = micros();
 }
 
 // =============================================================================
@@ -153,10 +153,10 @@ void send_values()
 // =============================================================================
 void loop()
 {
-    if ((millis() - next_upload_millis) < 0x80000000) // handle uint wraparound
+    if ((micros() - next_upload_micros) < 0x80000000) // handle uint wraparound
     {
         send_values();
-        next_upload_millis = next_upload_millis + (upload_period_s * 1000);
+        next_upload_micros = next_upload_micros + (upload_period_us);
     }
     web_server.handleClient();
 }
