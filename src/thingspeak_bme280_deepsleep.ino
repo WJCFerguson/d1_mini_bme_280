@@ -88,13 +88,12 @@ void setup() {
         ThingSpeak.setField(HUMIDITY_FIELD, humidity);
     ts(); Serial.print("Writing to ThingSpeak... ");
     int result = ThingSpeak.writeFields(CHANNEL_ID, WRITE_API_KEY);
-    if (result == HTTP_CODE_OK)
-    {
-        Serial.println("OK!");
-        sleep_after(upload_period_us);
+    if (result != HTTP_CODE_OK) {
+        Serial.printf("FAILED (%d)\r\n", result);
+        sleep_after(15e6);          // retry in 15s
     }
-    Serial.println(String("FAILED (") + result + ")");
-    sleep_after(15e6);          // retry in 15s
+    Serial.println("OK!");
+    sleep_after(upload_period_us);
 }
 
 
