@@ -2,9 +2,7 @@
 
 This is some simple Arduino/ESP8266 `.ino` sketch code to pull libraries from other people's hard work.
 
-There are two versions.  One uses deep sleep between measurements to
-save power, the other is always on and offers a simple web page with
-settings.
+There are two versions.  One uses deep sleep between measurements to save power, the other is always on and offers a simple web page with measurements.
 
 They both:
 
@@ -13,8 +11,7 @@ They both:
 * Periodically send data to ThingSpeak
 * Report and log over Serial
 
-The deep sleep sketch is the default (`make flash`), and the web
-sketch can be made with `make SKETCH=src/thingspeak_bme280.ino flash`.
+The deep sleep sketch is the default (`make flash`), and the web-serving sketch can be made with `make SKETCH=src/thingspeak_bme280.ino flash`.
 
 ## Prerequsites
 
@@ -32,12 +29,14 @@ On Ubuntu/Debian: `sudo apt install make git arduino-mk picocom`.
 
 Just takes a little soldering.  Any ESP8266 with I2C pins should work.  This was created using a D1 Mini clone and typical 4-pin I2C BME280 package (total < US$6), connecting pins:
 
-```
+| D1   | BME280 |
+|------|--------|
 | 3.3V | VIN |
 | G    | GND |
 | D1   | SCL |
 | D2   | SCA |
-```
+
+NOTE: For deep sleep wakeup, the D1's RST pin must be connected to its D0 pin.
 
 #### Firmware
 
@@ -66,6 +65,6 @@ If you extend it and need other libraries, simply cloning them into `./libraries
 
 To validate you can build to the device, plug it in and `make blink`, should make and flash an LED blink demo.
 
-To check which I2C Address your BME280 uses, `make enumerate` will make and flash a sketch that enumerates I2C addresses over Serial. Connect e.g. `picocom /dev/ttyUSB1` (exit `picocom` with `ctrl-a ctrl-c`).
+To check which I2C Address your BME280 uses, `make enumerate` will make and flash a sketch that enumerates I2C addresses over Serial. Connect e.g. `picocom /dev/ttyUSB1` (exit `picocom` with `ctrl-a ctrl-x`).
 
 After building the main program with `make flash`, connect with serial and hit reset to start from the beginning, and watch to see that it connects to wifi, finds the sensor, connects to ThingSpeak etc..  You can also connect a browser to the IP address to get fresh readings and confirm some settings.

@@ -12,57 +12,17 @@
 
 #include "thingspeak_bme280_settings.h"
 
-// =============================================================================
-/// Adafruit_BME280 class tailored to the specific needs
-class BME280Handler : public Adafruit_BME280
-{
-  public:
-    bool begin(uint8_t addr)
-    {
-        bool result = Adafruit_BME280::begin(addr);
-        // slow & conservative 1Hz/16x oversampling and significant filtering.
-        setSampling(
-            MODE_NORMAL,
-            TEMPERATURE_FIELD ? SAMPLING_X16 : SAMPLING_NONE,
-            PRESSURE_FIELD    ? SAMPLING_X16 : SAMPLING_NONE,
-            HUMIDITY_FIELD    ? SAMPLING_X16 : SAMPLING_NONE,
-            FILTER_X4,
-            STANDBY_MS_1000);
-        return result;
-    }
 
-    void take_measurement()
-    {
-        temperature = TEMP_CONV(readTemperature()) + TEMPERATURE_OFFSET;
-        pressure = readPressure() / 100.0 + PRESSURE_OFFSET;
-        humidity = readHumidity() + HUMIDITY_OFFSET;
-    }
-
-  public:
-    float temperature;
-    float humidity;
-    float pressure;
-};
-
-
-// =============================================================================
-inline void
-timestamp()
-{
-    static char buf[64];
-    snprintf(buf, sizeof(buf), "%9dms :: ", millis());
-    Serial.print(buf);
-}
+inline void ts() { Serial.printf("%9dms :: ", millis()); } // timestamp
 
 
 // =============================================================================
 /// Sleep at time_us microseconds after reset (or time_us from now if
-// that's already passed)
+/// that's already passed)
 inline void
-sleep_after(unsigned long time_us)
-{
-    timestamp();
-    Serial.print("Going to sleep until ");
+sleep_after(unsigned long time_us) {
+    pinMode(D0, WAKEUP_PULLUP);
+    ts(); Serial.print("Going to sleep until ");
     Serial.println(time_us / 1000);
     unsigned long when = time_us - micros();
     if (when > time_us)
@@ -73,58 +33,60 @@ sleep_after(unsigned long time_us)
 
 // =============================================================================
 void setup() {
-    pinMode(D0, WAKEUP_PULLUP);
+    // initialize BME280 asap, to get it to forced mode.  Some of them
+    // auto-heat when in MODE_NORMAL
+    Adafruit_BME280 bme;
+    bool bme_ok = bme.begin(BME_I2C_ADDR);
+    if (bme_ok) {
+        bme.setSampling(Adafruit_BME280::MODE_FORCED,
+                        Adafruit_BME280::SAMPLING_X1,
+                        Adafruit_BME280::SAMPLING_X1,
+                        Adafruit_BME280::SAMPLING_X1);
+    }
 
     Serial.begin(9600);
-    while (!Serial)
-        ;
+    while (!Serial) ;
     Serial.println();
-
-    // Sensor
-    BME280Handler bme;
-    if (!bme.begin(BME_I2C_ADDR))
-    {
-        Serial.println("ERROR: Could not find a valid BME280 sensor.");
-        while (true)
-            ;
+    if (!bme_ok) {
+        Serial.println("ERROR: Failed to find BME sensor.");
+        while (true);
     }
-    bme.take_measurement();
-
-    timestamp();
-    Serial.println(String(bme.temperature, 1) + "F; " +
-                   String(bme.pressure, 1) + "hPa; " +
-                   String(bme.humidity, 1) + "%; ");
 
     // Wifi
-    timestamp();
-    Serial.print(String("Wifi connecting to ") + wifi_ssid);
+    ts(); Serial.printf("Wifi connecting to %s\r\n", wifi_ssid);
     if (wifi_hostname)
         WiFi.hostname(wifi_hostname);
     WiFi.begin(wifi_ssid, wifi_psk);
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(10);
-        if (millis() % 500 == 0)
-            Serial.print(".");
+    while (WiFi.status() != WL_CONNECTED) {
+        if (millis() > 30e3) {
+            ts(); Serial.println("Failed to connect; sleeping");
+            sleep_after(upload_period_us);
+        }
+        delay(100);
     }
-    Serial.println();
-    timestamp();
-    Serial.print("Connected as ");
-    Serial.print(WiFi.localIP());
-    Serial.println(String("; RSSI: ") + String(WiFi.RSSI()) + " dBm.");
+    ts(); Serial.printf("Connected as %s; RSSI: %d\r\n",
+                        WiFi.localIP().toString().c_str(),
+                        WiFi.RSSI());
+
+    // take measurements
+    bme.takeForcedMeasurement();
+    float temperature = TEMP_CONV(bme.readTemperature()) + TEMPERATURE_OFFSET;
+    float pressure = bme.readPressure() / 100.0 + PRESSURE_OFFSET;
+    float humidity = bme.readHumidity() + HUMIDITY_OFFSET;
+
+    ts(); Serial.printf("%5.1fF; %.1fhPa; %.1f%%\r\n",
+                        temperature, pressure, humidity);
 
     // ThingSpeak
     WiFiClient wifi_client;
     ThingSpeak.begin(wifi_client);
     if (TEMPERATURE_FIELD)
-        ThingSpeak.setField(TEMPERATURE_FIELD, bme.temperature);
+        ThingSpeak.setField(TEMPERATURE_FIELD, temperature);
     if (PRESSURE_FIELD)
-        ThingSpeak.setField(PRESSURE_FIELD, bme.pressure);
+        ThingSpeak.setField(PRESSURE_FIELD, pressure);
     if (HUMIDITY_FIELD)
-        ThingSpeak.setField(HUMIDITY_FIELD, bme.humidity);
-
-    timestamp();
-    Serial.print("Writing to ThingSpeak... ");
+        ThingSpeak.setField(HUMIDITY_FIELD, humidity);
+    ts(); Serial.print("Writing to ThingSpeak... ");
     int result = ThingSpeak.writeFields(CHANNEL_ID, WRITE_API_KEY);
     if (result == HTTP_CODE_OK)
     {
@@ -132,12 +94,12 @@ void setup() {
         sleep_after(upload_period_us);
     }
     Serial.println(String("FAILED (") + result + ")");
-
-    sleep_after(10e6);          // retry in 10s
+    sleep_after(15e6);          // retry in 15s
 }
 
 
 // =============================================================================
 void loop() {}
+
 
 // ==================================== End ====================================
