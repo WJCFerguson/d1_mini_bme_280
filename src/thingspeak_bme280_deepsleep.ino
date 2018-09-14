@@ -53,7 +53,9 @@ void setup() {
     }
 
     // Wifi
-    ts(); Serial.printf("Wifi connecting to %s\r\n", wifi_ssid);
+    ts(); Serial.printf("Wifi connecting to %s as %s\r\n",
+                        wifi_ssid,
+                        wifi_hostname ? wifi_hostname : "<unset>");
     if (wifi_hostname)
         WiFi.hostname(wifi_hostname);
     WiFi.begin(wifi_ssid, wifi_psk);
