@@ -92,7 +92,7 @@ void setup() {
     int result = ThingSpeak.writeFields(CHANNEL_ID, WRITE_API_KEY);
     if (result != HTTP_CODE_OK) {
         Serial.printf("FAILED (%d)\r\n", result);
-        sleep_after(15e6);          // retry in 15s
+        sleep_after(upload_period_us / 10); // retry in 1/10 period
     }
     Serial.println("OK!");
     sleep_after(upload_period_us);
