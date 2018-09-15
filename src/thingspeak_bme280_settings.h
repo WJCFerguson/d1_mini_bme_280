@@ -45,7 +45,8 @@ const float PRESSURE_OFFSET = 0.0;
 
 
 // ============================== Recording period =============================
-static const unsigned long upload_period_us = 60 * 1e6;
+// In microseconds.  default to 10 minutes
+static const unsigned long upload_period_us = 10 * 60e6;
 
 
 // ================================ End Settings ===============================
