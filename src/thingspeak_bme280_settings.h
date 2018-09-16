@@ -29,6 +29,7 @@ const char* WRITE_API_KEY = "xxxxx";
 const unsigned int TEMPERATURE_FIELD = 1;
 const unsigned int HUMIDITY_FIELD = 2;
 const unsigned int PRESSURE_FIELD = 3;
+const unsigned int RSSI_FIELD = 4;
 
 
 // ============================= Temperature units =============================

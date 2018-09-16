@@ -88,6 +88,9 @@ void setup() {
         ThingSpeak.setField(PRESSURE_FIELD, pressure);
     if (HUMIDITY_FIELD)
         ThingSpeak.setField(HUMIDITY_FIELD, humidity);
+    if (RSSI_FIELD)
+        ThingSpeak.setField(RSSI_FIELD, WiFi.RSSI());
+
     ts(); Serial.print("Writing to ThingSpeak... ");
     int result = ThingSpeak.writeFields(CHANNEL_ID, WRITE_API_KEY);
     if (result != HTTP_CODE_OK) {
