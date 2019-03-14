@@ -36,14 +36,14 @@ Just takes a little soldering.  Any ESP8266 with I2C pins should work.  This was
 | D1   | SCL |
 | D2   | SCA |
 
-NOTE: For deep sleep wakeup, the D1's RST pin must be connected to its D0 pin.
+**NOTE and BEWARE:** For deep sleep wakeup, the D1's RST pin must be connected to its D0 pin.  You may find with this connected it's awkward to get the device to reflash.  Particularly for the deep sleep version, you should flash and test it before connecting these pins.  With it connected, to reflash, I sometimes have to manually reset around or during the attempt to flash (optimal timing isn't clear).
 
 #### Firmware
 
 Building and flashing should be trivial.  You'll need to make a ThingSpeak account and channel (free of charge).
 
-* Edit the settings in `src/thingspeak_bme280_settings.h`.
 * make `src/wifi_credentials.h` as outlined in `src/thingspeak_bme280_settings.h`
+* Edit the settings in `src/thingspeak_bme280_settings.h`.
 * If you aren't using a D1 Mini, edit the `BOARD` type in `Makefile`
 * Plug it in and `make flash`
 
@@ -68,3 +68,9 @@ To validate you can build to the device, plug it in and `make blink`, should mak
 To check which I2C Address your BME280 uses, `make enumerate` will make and flash a sketch that enumerates I2C addresses over Serial. Connect e.g. `picocom /dev/ttyUSB1` (exit `picocom` with `ctrl-a ctrl-x`).
 
 After building the main program with `make flash`, connect with serial and hit reset to start from the beginning, and watch to see that it connects to wifi, finds the sensor, connects to ThingSpeak etc..  You can also connect a browser to the IP address to get fresh readings and confirm some settings.
+
+The `run_one-until-success` (Ubuntu: `run-one` package) utility is useful when flashing isn't successful first try.  E.g.  to flash and then immediately connect serial:
+
+``` shell
+run-one-until-success make flash && picocom /dev/ttyUSB0
+```
