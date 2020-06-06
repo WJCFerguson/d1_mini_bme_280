@@ -36,7 +36,7 @@ Just takes a little soldering.  Any ESP8266 with I2C pins should work.  This was
 | D1   | SCL |
 | D2   | SCA |
 
-**NOTE and BEWARE:** For deep sleep wakeup, the D1's RST pin must be connected to its D0 pin.  You may find with this connected it's awkward to get the device to reflash.  Particularly for the deep sleep version, you should flash and test it before connecting these pins.  With it connected, to reflash, I sometimes have to manually reset around or during the attempt to flash (optimal timing isn't clear).
+**NOTE and BEWARE:** For deep sleep wakeup, the D1's RST pin must be connected to its D0 pin.  You may find with this connected it's awkward to get the device to reflash.  Particularly for the deep sleep version, you should get your desired firmware flashed before connecting these pins.  With it connected, to reflash, I sometimes have to manually reset around or during the attempt to flash (optimal timing isn't clear).
 
 #### Firmware
 
