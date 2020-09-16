@@ -145,7 +145,6 @@ void send_values()
             break;
         }
         Serial.println(String("FAILED (") + result + ")");
-        delay(15 * 1000);       // ThingSpeak rate-limits to one every 15s
     }
 }
 
