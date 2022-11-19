@@ -167,7 +167,7 @@ static const size_t EEPROM_start = 33;
 // if MEMBER_MATCH then set char[] `identifier` to `valueStr`; return success
 #define MEMBER_STRING_SET(identifier, nameStr, minMatchLen, valueStr)                    \
     (MEMBER_MATCH(identifier, nameStr, minMatchLen)                                      \
-         ? strncpy(identifier, value.c_str(), sizeof(identifier) - 1)                    \
+         ? (bool)strncpy(identifier, value.c_str(), sizeof(identifier) - 1)              \
          : false)
 
 
@@ -205,37 +205,36 @@ struct Config
 
     void dump()
     {
-        logNoTS(
-            "\r\n\n"
-            "====================================================================\r\n"
-            "Settings:\r\n"
-            "Wifi:\r\n"
-            "  ssid            = \"%s\"\r\n"
-            "  psk             = \"%s\"\r\n"
-            "  hostname        = \"%s\"\r\n",
-            ssid,
-            psk,
-            hostname);
+        logNoTS("\r\n\n"
+                "====================================================================\r\n"
+                "Settings:\r\n"
+                "Wifi:\r\n"
+                "  ssid            = \"%s\"\r\n"
+                "  psk             = \"%s\"\r\n"
+                "  hostname        = \"%s\"\r\n",
+                ssid,
+                psk,
+                hostname);
         logNoTS("Config\r\n"
-                  "  update_period_s = %d\r\n"
-                  "  fahrenheit      = %s\r\n"
-                  "Calibration values\r\n"
-                  "  temp_offset_C   = %.2f (NOTE: Celcius)\r\n",
-                  update_period_s,
-                  fahrenheit ? "yes" : "no",
-                  temp_offset_C);
+                "  update_period_s = %d\r\n"
+                "  fahrenheit      = %s\r\n"
+                "Calibration values\r\n"
+                "  temp_offset_C   = %.2f (NOTE: Celcius)\r\n",
+                update_period_s,
+                fahrenheit ? "yes" : "no",
+                temp_offset_C);
         logNoTS("InfluxDB Settings\r\n"
-                  "  url             = \"%s\"\r\n"
-                  "  org             = \"%s\" (InfluxDB 1: name)\r\n"
-                  "  token           = \"%s\" (InfluxDB 1: leave blank)\r\n"
-                  "  bucket          = \"%s\" (InfluxDB 1: leave blank)\r\n"
-                  "  location        = \"%s\" (Influx record tag)\r\n"
-                  "\n\n",
-                  url,
-                  org,
-                  token,
-                  bucket,
-                  location);
+                "  url             = \"%s\"\r\n"
+                "  org             = \"%s\" (InfluxDB 1: name)\r\n"
+                "  token           = \"%s\" (InfluxDB 1: leave blank)\r\n"
+                "  bucket          = \"%s\" (InfluxDB 1: leave blank)\r\n"
+                "  location        = \"%s\" (Influx record tag)\r\n"
+                "\n\n",
+                url,
+                org,
+                token,
+                bucket,
+                location);
     }
 
     bool minimallyConfigured()
