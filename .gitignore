@@ -1,2 +1,7 @@
-/TAGS
-src/wifi_credentials.h
+.pio
+.clang_complete
+.ccls
+/.ccls-cache/
+/.direnv/
+/.envrc
+/.projectile
