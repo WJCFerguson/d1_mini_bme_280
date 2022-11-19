@@ -57,7 +57,7 @@ Just takes a little soldering.  Any ESP8266 with I2C pins should work.  This was
 | D1      | SCL    |
 | D2      | SCA    |
 
-Then to allow the device to wake itself up, the RST pin must be connected to D0 (GPIO16).  A small resistor (300-1000Ω) probably works, but best to use a diode, silvered end on the D0/GPIO16 pin.
+Then to allow the device to wake itself up, the `RST` pin must be connected to `D0` (`GPIO16`).  A small resistor (300-1000Ω) probably works, but best to use a diode, silvered end on the `D0`/`GPIO16` pin.
 
 ![board view 1](./D1_BME280_1.jpg)
 ![board view 2](./D1_BME280_2.jpg)
